@@ -2,6 +2,7 @@
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/outputs.h>
+#include "keys_sv.h"
 
 / {
     chosen {
@@ -20,6 +21,14 @@
         };
     };
 
+    macros {
+        space_exit: space_exit {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp SPACE &to 0>;
+        };
+    };
+
     combos {
         compatible = "zmk,combos";
 
@@ -27,35 +36,97 @@
             timeout-ms = <50>;
             key-positions = <16 17>; // 'c' and 'a' positions in birdie layout
             bindings = <&kp BSPC>;
-            layers = <1>; // Only active in birdie layer
+            layers = <0 9 10>; // Active in birdie, numword, and capsword layers
+        };
+
+        combo_numword {
+            timeout-ms = <50>;
+            key-positions = <31 34>; // Left two thumb keys (ESC and SPACE)
+            bindings = <&to 9>;
+        };
+
+        combo_capsword {
+            timeout-ms = <50>;
+            key-positions = <13 16>; // Keys 13 and 16
+            bindings = <&to 10>;
+            layers = <0 1>; // Only active in birdie and qwerty layers (not in capsword itself)
+        };
+
+        combo_capsword_exit {
+            timeout-ms = <50>;
+            key-positions = <13 16>; // Keys 13 and 16 - same combo to exit
+            bindings = <&to 0>;
+            layers = <10>; // Only active in capsword layer
+        };
+
+        combo_a_ring {
+            timeout-ms = <50>;
+            key-positions = <6 16>; // å
+            bindings = <&kp SV_A_RING>;
+            layers = <0>; // Only active in birdie layer
+        };
+
+        combo_a_umlaut {
+            timeout-ms = <50>;
+            key-positions = <16 26>; // ä
+            bindings = <&kp SV_A_UMLAUT>;
+            layers = <0>; // Only active in birdie layer
+        };
+
+        combo_o_umlaut {
+            timeout-ms = <50>;
+            key-positions = <7 17>; // ö
+            bindings = <&kp SV_O_UMLAUT>;
+            layers = <0>; // Only active in birdie layer
+        };
+
+        combo_a_ring_caps {
+            timeout-ms = <50>;
+            key-positions = <6 16>; // Å (capitalized)
+            bindings = <&kp LS(SV_A_RING)>;
+            layers = <10>; // Only active in capsword layer
+        };
+
+        combo_a_umlaut_caps {
+            timeout-ms = <50>;
+            key-positions = <16 26>; // Ä (capitalized)
+            bindings = <&kp LS(SV_A_UMLAUT)>;
+            layers = <10>; // Only active in capsword layer
+        };
+
+        combo_o_umlaut_caps {
+            timeout-ms = <50>;
+            key-positions = <7 17>; // Ö (capitalized)
+            bindings = <&kp LS(SV_O_UMLAUT)>;
+            layers = <10>; // Only active in capsword layer
         };
     };
 
     keymap {
         compatible = "zmk,keymap";
 
-        // Base layer (Miryoku QWERTY)
+        // Birdie base layer (now default)
         default_layer {
+            bindings = <
+&trans      &kp L       &kp P        &kp D        &kp F          &kp SQT     &kp W         &kp O        &kp U       &trans
+&hm LGUI T  &hm LALT S  &hm LCTRL N  &hm LSHFT H  &lt 8 M        &lt 8 G     &hm RSHFT C   &hm RCTRL A  &hm RALT I  &hm RGUI E
+&kp V       &kp Z       &kp B        &kp K        &kp Q          &kp X       &kp Y         &kp DOT      &kp COMMA   &kp J
+                        &lt 5 ESC    &lt 7 R      &kp TAB        &lt 4 RET &lt 3 SPACE  &lt 6 BSPC
+            >;
+        };
+
+        // QWERTY layer
+        qwerty_layer {
             // -----------------------------------------------------------------------------------------
             // |  Q  |  W  |  E  |  R  |  T  |   |  Y  |  U   |  I  |  O  |  P  |
             // |  A  |  S  |  D  |  F  |  G  |   |  H  |  J   |  K  |  L  |  ;  |
             // |  Z  |  X  |  C  |  V  |  B  |   |  N  |  M   |  ,  |  .  |  /  |
             //             | ESC | SPC | TAB |   | ENT | BSPC | DEL |
             bindings = <
-&kp Q       &kp W       &kp E        &kp R        &kp T          &kp Y    &kp U         &kp I        &kp O       &kp P
-&hm LGUI A  &hm LALT S  &hm LCTRL D  &hm LSHFT F  &kp G          &kp H    &hm RSHFT J   &hm RCTRL K  &hm RALT L  &hm RGUI SEMI
-&kp Z       &kp X       &kp C        &kp V        &kp B          &kp N    &kp M         &kp COMMA    &kp DOT     &kp FSLH
+&kp Q       &kp W       &kp E        &kp R        &kp T          &kp Y       &kp U         &kp I        &kp O       &kp P
+&hm LGUI A  &hm LALT S  &hm LCTRL D  &hm LSHFT F  &lt 8 G        &lt 8 H     &hm RSHFT J   &hm RCTRL K  &hm RALT L  &hm RGUI SEMI
+&kp Z       &kp X       &kp C        &kp V        &kp B          &kp N       &kp M         &kp COMMA    &kp DOT     &kp FSLH
                         &lt 5 ESC    &lt 2 SPACE  &kp TAB      &lt 4 RET   &lt 3 BSPC  &lt 6 DEL
-            >;
-        };
-
-        // Birdie base layer
-        birdie_layer {
-            bindings = <
-&trans      &kp L       &kp P        &kp D        &kp F          &kp SQT  &kp W         &kp O        &kp U       &trans
-&hm LGUI T  &hm LALT S  &hm LCTRL N  &hm LSHFT H  &kp M          &kp G    &hm RSHFT C   &hm RCTRL A  &hm RALT I  &hm RGUI E
-&kp V       &kp Z       &kp B        &kp K        &kp Q          &kp X    &kp Y         &kp DOT      &kp COMMA   &kp J
-                        &lt 5 ESC    &lt 7 R      &kp TAB        &lt 4 RET &lt 3 SPACE  &lt 6 BSPC 
             >;
         };
 
@@ -64,7 +135,7 @@
             bindings = <
 &trans    &trans    &trans     &trans      &trans        &kp PG_UP &kp HOME &kp CAPS &kp END   &kp INS
 &kp LGUI  &kp LALT  &kp LCTRL  &kp LSHFT   &trans        &kp LEFT  &kp DOWN &kp UP   &kp RIGHT &kp PG_DN
-&trans    &trans    &trans     &trans      &trans        &trans    &trans   &trans   &trans    &to 1
+&trans    &trans    &trans     &trans      &trans        &trans    &trans   &trans   &trans    &to 1  // Switch to QWERTY
                     &trans     &trans      &trans        &kp RET   &kp BSPC &kp DEL
             >;
         };
@@ -116,6 +187,36 @@
 &kp LGUI  &kp LALT  &kp LCTRL  &kp LSHFT   &trans        &kp LEFT  &kp DOWN &kp UP   &kp RIGHT &kp PG_DN
 &trans    &trans    &trans     &trans      &trans        &trans    &trans   &trans   &trans    &to 0
                     &trans     &trans      &trans        &kp RET   &kp BSPC &kp DEL
+            >;
+        };
+
+        // New Number layer (layer 8)
+        new_num_layer {
+            bindings = <
+&trans    &trans    &trans    &trans    &trans        &trans    &trans    &trans    &trans    &trans
+&kp N6    &kp N4    &kp N0    &kp N2    &trans        &trans    &kp N3    &kp N1    &kp N5    &kp N7
+&trans    &trans    &trans    &kp N8    &trans        &trans    &kp N9    &trans    &trans    &trans
+                    &trans    &trans    &trans        &trans    &trans    &trans
+            >;
+        };
+
+        // NUMWORD layer (layer 9) - sticky number mode
+        numword_layer {
+            bindings = <
+&trans       &trans       &trans        &trans        &trans        &trans       &trans        &trans        &trans       &trans
+&hm LGUI N6  &hm LALT N4  &hm LCTRL N0  &hm LSHFT N2  &to 0         &to 0        &hm RSHFT N3  &hm RCTRL N1  &hm RALT N5  &hm RGUI N7
+&trans       &trans       &trans        &kp N8        &trans        &trans       &kp N9        &trans        &trans       &trans
+                          &trans        &to 0         &trans        &trans       &space_exit   &trans
+            >;
+        };
+
+        // CAPSWORD layer (layer 10) - sticky capital letters mode
+        capsword_layer {
+            bindings = <
+&trans          &kp LS(L)       &kp LS(P)        &kp LS(D)        &kp LS(F)       &kp SQT         &kp LS(W)        &kp LS(O)        &kp LS(U)       &trans
+&hm LGUI LS(T)  &hm LALT LS(S)  &hm LCTRL LS(N)  &hm LSHFT LS(H)  &kp LS(M)       &kp LS(G)       &hm RSHFT LS(C)  &hm RCTRL LS(A)  &hm RALT LS(I)  &hm RGUI LS(E)
+&kp LS(V)       &kp LS(Z)       &kp LS(B)        &kp LS(K)        &kp LS(Q)       &kp LS(X)       &kp LS(Y)        &kp DOT          &kp COMMA       &kp LS(J)
+                                &trans           &kp LS(R)        &trans          &trans          &space_exit      &trans
             >;
         };
     };
