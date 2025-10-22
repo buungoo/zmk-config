@@ -20,6 +20,17 @@
         };
     };
 
+    combos {
+        compatible = "zmk,combos";
+
+        combo_ca_backspace {
+            timeout-ms = <50>;
+            key-positions = <16 17>; // 'c' and 'a' positions in birdie layout
+            bindings = <&kp BSPC>;
+            layers = <1>; // Only active in birdie layer
+        };
+    };
+
     keymap {
         compatible = "zmk,keymap";
 
@@ -38,13 +49,13 @@
             >;
         };
 
-        // Colemak-DH base layer
-        colemak_layer {
+        // Birdie base layer
+        birdie_layer {
             bindings = <
-&kp Q       &kp W       &kp F        &kp P        &kp B          &kp J    &kp L         &kp U        &kp Y       &kp SEMI
-&hm LGUI A  &hm LALT R  &hm LCTRL S  &hm LSHFT T  &kp G          &kp M    &hm RSHFT N   &hm RCTRL E  &hm RALT I  &hm RGUI O
-&kp Z       &kp X       &kp C        &kp D        &kp V          &kp K    &kp H         &kp COMMA    &kp DOT     &kp FSLH
-                        &lt 5 ESC    &lt 7 SPACE  &kp TAB        &lt 4 RET &lt 3 BSPC  &lt 6 DEL
+&trans      &kp L       &kp P        &kp D        &kp F          &kp SQT  &kp W         &kp O        &kp U       &trans
+&hm LGUI T  &hm LALT S  &hm LCTRL N  &hm LSHFT H  &kp M          &kp G    &hm RSHFT C   &hm RCTRL A  &hm RALT I  &hm RGUI E
+&kp V       &kp Z       &kp B        &kp K        &kp Q          &kp X    &kp Y         &kp DOT      &kp COMMA   &kp J
+                        &lt 5 ESC    &lt 7 R      &kp TAB        &lt 4 RET &lt 3 SPACE  &lt 6 BSPC 
             >;
         };
 
@@ -98,8 +109,8 @@
             >;
         };
 
-        // Colemak Navigation layer (layer 7)
-        colemak_nav_layer {
+        // Birdie Navigation layer (layer 7)
+        birdie_nav_layer {
             bindings = <
 &trans    &trans    &trans     &trans      &trans        &kp PG_UP &kp HOME &kp CAPS &kp END   &kp INS
 &kp LGUI  &kp LALT  &kp LCTRL  &kp LSHFT   &trans        &kp LEFT  &kp DOWN &kp UP   &kp RIGHT &kp PG_DN
