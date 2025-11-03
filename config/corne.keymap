@@ -32,9 +32,16 @@
     combos {
         compatible = "zmk,combos";
 
-        combo_ca_backspace {
+        /* combo_ca_backspace { */
+        /*     timeout-ms = <50>; */
+        /*     key-positions = <16 17>; // 'c' and 'a' positions in birdie layout */
+        /*     bindings = <&kp BSPC>; */
+        /*     layers = <0 9 10>; // Active in birdie, numword, and capsword layers */
+        /* }; */
+
+		  combo_wa_backspace {
             timeout-ms = <50>;
-            key-positions = <16 17>; // 'c' and 'a' positions in birdie layout
+            key-positions = <6 16>; // 'c' and 'a' positions in birdie layout
             bindings = <&kp BSPC>;
             layers = <0 9 10>; // Active in birdie, numword, and capsword layers
         };
@@ -61,7 +68,7 @@
 
         combo_a_ring {
             timeout-ms = <50>;
-            key-positions = <6 16>; // å
+            key-positions = <5 15>; // å
             bindings = <&kp SV_A_RING>;
             layers = <0>; // Only active in birdie layer
         };
