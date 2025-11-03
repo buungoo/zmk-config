@@ -1,0 +1,272 @@
+#include <behaviors.dtsi>
+#include <behaviors/num_word.dtsi> // Requires zmk-auto-layer module.
+#include <behaviors/unicode.dtsi> // Requires zmk-unicode module.
+#include <zmk-helpers/helper.h> // Requires zmk-helpers module.
+#include <dt-bindings/zmk/keys.h>
+#include <zmk-helpers/helper.h>
+#include "keys_sv.h"
+#ifdef CONFIG_WIRELESS
+  #include <dt-bindings/zmk/bt.h>
+  #include <dt-bindings/zmk/outputs.h>
+  #define _BT_SEL_KEYS_                                                        \
+      &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_CLR
+#else
+  #define _BT_SEL_KEYS_ &trans &trans &trans &trans &trans
+#endif
+
+#define DEF 0
+#define NAV 1
+#define NUM 2
+#define SYM 3
+#define MEDIA 4
+#define FUN 5
+#define NEW_NUM 6
+#define NUMWORD 7
+#define CAPSWORD 8
+
+#define XXX &none
+#define ___ &trans
+
+/* Global defaults */
+
+#define QUICK_TAP_MS 175
+
+&sk {
+  release-after-ms = <900>;
+  quick-release;
+};
+
+&sl { // Allow sticky mods to chord across sticky layers.
+  ignore-modifiers;
+};
+
+&lt {
+  flavor = "balanced";
+  tapping-term-ms = <200>;
+  quick-tap-ms = <QUICK_TAP_MS>;
+};
+
+/* Homerow mods */
+
+#define KEYS_L LT0 LT1 LT2 LT3 LT4 LM0 LM1 LM2 LM3 LM4 LB0 LB1 LB2 LB3 LB4
+#define KEYS_R RT0 RT1 RT2 RT3 RT4 RM0 RM1 RM2 RM3 RM4 RB0 RB1 RB2 RB3 RB4
+#ifndef LH2
+  #define THUMBS LH1 LH0 RH0 RH1         // Thumbs on 34 keys.
+#else
+  #define THUMBS LH2 LH1 LH0 RH0 RH1 RH2 // Thumbs on 36+ keys.
+#endif
+
+#define MAKE_HRM(NAME, HOLD, TAP, TRIGGER_POS)                                 \
+  ZMK_HOLD_TAP(NAME, bindings = <HOLD>, <TAP>; flavor = "balanced";            \
+               tapping-term-ms = <280>; quick-tap-ms = <QUICK_TAP_MS>;         \
+               require-prior-idle-ms = <150>; hold-trigger-on-release;         \
+               hold-trigger-key-positions = <TRIGGER_POS>;)
+
+MAKE_HRM(hml, &kp, &kp, KEYS_R THUMBS) // Left-hand HRMs.
+MAKE_HRM(hmr, &kp, &kp, KEYS_L THUMBS) // Right-hand HRMs.
+
+/* Custom macros */
+
+ZMK_MACRO(space_exit, bindings = <&kp SPACE &to DEF>; wait-ms = <0>; tap-ms = <5>;)
+
+/* Swedish character combos */
+
+/ {
+    combos {
+        compatible = "zmk,combos";
+
+        combo_wa_backspace {
+            timeout-ms = <50>;
+            key-positions = <RT1 RM1>; // 'w' and 't' positions in birdie layout
+            bindings = <&kp BSPC>;
+            layers = <DEF NUMWORD CAPSWORD>;
+        };
+
+        combo_numword {
+            timeout-ms = <50>;
+            key-positions = <LH1 LH0>; // Left two thumb keys
+            bindings = <&to NUMWORD>;
+        };
+
+        combo_capsword {
+            timeout-ms = <50>;
+            key-positions = <LM1 LM4>; // Keys for capsword
+            bindings = <&to CAPSWORD>;
+            layers = <DEF>;
+        };
+
+        combo_capsword_exit {
+            timeout-ms = <50>;
+            key-positions = <LM1 LM4>; // Same combo to exit
+            bindings = <&to DEF>;
+            layers = <CAPSWORD>;
+        };
+
+        combo_a_ring {
+            timeout-ms = <50>;
+            key-positions = <RM1 RB1>; // å
+            bindings = <&kp SV_A_RING>;
+            layers = <DEF>;
+        };
+
+        combo_a_umlaut {
+            timeout-ms = <50>;
+            key-positions = <RT0 RM0>; // ä
+            bindings = <&kp SV_A_UMLAUT>;
+            layers = <DEF>;
+        };
+
+        combo_o_umlaut {
+            timeout-ms = <50>;
+            key-positions = <RT2 RM2>; // ö
+            bindings = <&kp SV_O_UMLAUT>;
+            layers = <DEF>;
+        };
+
+        combo_a_ring_caps {
+            timeout-ms = <50>;
+            key-positions = <RM1 RB1>; // Å (capitalized)
+            bindings = <&kp LS(SV_A_RING)>;
+            layers = <CAPSWORD>;
+        };
+
+        combo_a_umlaut_caps {
+            timeout-ms = <50>;
+            key-positions = <RT0 RM0>; // Ä (capitalized)
+            bindings = <&kp LS(SV_A_UMLAUT)>;
+            layers = <CAPSWORD>;
+        };
+
+        combo_o_umlaut_caps {
+            timeout-ms = <50>;
+            key-positions = <RT2 RM2>; // Ö (capitalized)
+            bindings = <&kp LS(SV_O_UMLAUT)>;
+            layers = <CAPSWORD>;
+        };
+    };
+};
+
+/* Keymap */
+
+#ifndef ZMK_BASE_LAYER
+  #define ZMK_BASE_LAYER(name, LT, RT, LM, RM, LB, RB, LH, RH)                 \
+      ZMK_LAYER(name, LT RT LM RM LB RB LH RH)
+#endif
+
+// BIRDIE BASE LAYER
+ZMK_BASE_LAYER(Base,
+//╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮ ╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮
+    ___           &kp L         &kp P         &kp D         &kp F       ,   &kp SV_SQT       &kp W         &kp O         &kp U         ___      ,
+//├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+    &hml LGUI T   &hml LALT S   &hml LCTRL N  &hml LSHFT H &lt NEW_NUM M,  &lt NEW_NUM G &hmr RSHFT C  &hmr RCTRL A  &hmr RALT I   &hmr RGUI E ,
+//├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+    &kp V         &kp Z         &kp B         &kp K         &kp Q       ,   &kp X         &kp Y         &kp DOT       &kp COMMA     &kp J       ,
+//╰─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┴───────────────────────────╯
+                               &lt MEDIA ESC   &lt NAV R      &kp TAB   ,   &lt SYM RET  &lt NUM SPACE &lt FUN BSPC
+//                            ╰─────────────┴─────────────┴─────────────╯ ╰─────────────┴─────────────┴─────────────╯
+
+// NAV layer (layer 1) - Navigation with vim-style arrows
+ZMK_BASE_LAYER(Nav,
+//╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮ ╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮
+    ___           ___           ___           ___           ___         ,   &kp PG_UP     &kp HOME      &kp CAPS      &kp END       &kp INS     ,
+//├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+    &kp LGUI      &kp LALT      &kp LCTRL     &kp LSHFT     ___         ,   &kp LEFT      &kp DOWN      &kp UP        &kp RIGHT     &kp PG_DN   ,
+//├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+    ___           ___           ___           ___           ___         ,   ___           ___           ___           ___           ___         ,
+//╰─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┴───────────────────────────╯
+                                    ___           ___           ___     ,     &kp RET      &kp BSPC       &kp DEL
+//                            ╰─────────────┴─────────────┴─────────────╯ ╰─────────────┴─────────────┴─────────────╯
+)
+
+// NUM layer (layer 2) - Numbers
+ZMK_BASE_LAYER(Num,
+//╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮ ╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮
+    &kp LBKT      &kp N7        &kp N8        &kp N9        &kp RBKT    ,   ___           ___           ___           ___           ___         ,
+//├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+    &kp SEMI      &kp N4        &kp N5        &kp N6        &kp EQUAL   ,   ___           &kp RSHFT     &kp RCTRL     &kp RALT      &kp RGUI    ,
+//├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+    &kp GRAVE     &kp N1        &kp N2        &kp N3        &kp BSLH    ,   ___           ___           ___           ___           ___         ,
+//╰─────────────┼─────────────┴─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┴───────────────────────────╯
+                                              &kp DOT       &kp N0        &kp MINUS,___  ___           ___
+//                                          ╰─────────────┴─────────────╯ ╰─────────────┴─────────────╯
+)
+
+// SYM layer (layer 3) - Symbols
+ZMK_BASE_LAYER(Sym,
+//╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮ ╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮
+    &kp LBRC      &kp AMPS      &kp ASTRK     &kp LPAR      &kp RBRC    ,   ___           ___           ___           ___           ___         ,
+//├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+    &kp COLON     &kp DLLR      &kp PRCNT     &kp CARET     &kp PLUS    ,   ___           &kp RSHFT     &kp RCTRL     &kp RALT      &kp RGUI    ,
+//├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+    &kp TILDE     &kp EXCL      &kp AT        &kp HASH      &kp PIPE    ,   ___           ___           ___           ___           ___         ,
+//╰─────────────┼─────────────┴─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┴───────────────────────────╯
+                                              &kp LPAR      &kp RPAR      &kp UNDER,___  ___           ___
+//                                          ╰─────────────┴─────────────╯ ╰─────────────┴─────────────╯
+)
+
+// MEDIA layer (layer 4) - Media controls
+ZMK_BASE_LAYER(Media,
+//╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮ ╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮
+    ___           ___           ___           ___           ___         ,   ___           ___           ___           ___           ___         ,
+//├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+    &kp LGUI      &kp LALT      &kp LCTRL     &kp LSHFT     ___         ,   &kp C_PREV    &kp C_VOL_DN  &kp C_VOL_UP  &kp C_NEXT    ___         ,
+//├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+    ___           ___           ___           ___           ___         ,   &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_CLR  ,
+//╰─────────────┼─────────────┴─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┴───────────────────────────╯
+                                              ___           ___           ___,&kp C_STOP &kp C_PP &kp C_MUTE
+//                                          ╰─────────────┴─────────────╯ ╰─────────────┴─────────────╯
+)
+
+// FUN layer (layer 5) - Function keys
+ZMK_BASE_LAYER(Fun,
+//╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮ ╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮
+    &kp F12       &kp F7        &kp F8        &kp F9        &kp PSCRN   ,   ___           ___           ___           ___           ___         ,
+//├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+    &kp F11       &kp F4        &kp F5        &kp F6        &kp SLCK    ,   ___           &kp RSHFT     &kp RCTRL     &kp RALT      &kp RGUI    ,
+//├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+    &kp F10       &kp F1        &kp F2        &kp F3        &kp PAUSE_BREAK,___          ___           ___           ___           ___         ,
+//╰─────────────┼─────────────┴─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┴───────────────────────────╯
+                                              &kp K_APP     &kp SPACE     &kp TAB,___    ___           ___
+//                                          ╰─────────────┴─────────────╯ ╰─────────────┴─────────────╯
+)
+
+// NEW_NUM layer (layer 7) - New number layout
+ZMK_BASE_LAYER(NewNum,
+//╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮ ╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮
+    ___           ___           ___           ___           ___         ,   ___           ___           ___           ___           ___         ,
+//├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+    &kp N6        &kp N4        &kp N0        &kp N2        ___         ,   ___           &kp N3        &kp N1        &kp N5        &kp N7      ,
+//├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+    ___           ___           ___           &kp N8        ___         ,   ___           &kp N9        ___           ___           ___         ,
+//╰─────────────┼─────────────┴─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┴───────────────────────────╯
+                                              ___           ___           ___,___         ___           ___
+//                                          ╰─────────────┴─────────────╯ ╰─────────────┴─────────────╯
+)
+
+// NUMWORD layer (layer 8) - Sticky number mode
+ZMK_BASE_LAYER(Numword,
+//╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮ ╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮
+    ___           ___           ___           ___           ___         ,   ___           ___           ___           ___           ___         ,
+//├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+    &hml LGUI N6  &hml LALT N4  &hml LCTRL N0 &hml LSHFT N2 &to DEF     ,   &to DEF       &hmr RSHFT N3 &hmr RCTRL N1 &hmr RALT N5  &hmr RGUI N7,
+//├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+    ___           ___           ___           &kp N8        ___         ,   ___           &kp N9        ___           ___           ___         ,
+//╰─────────────┼─────────────┴─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┴───────────────────────────╯
+                                              ___           &to DEF       ___,___         &space_exit   ___
+//                                          ╰─────────────┴─────────────╯ ╰─────────────┴─────────────╯
+)
+
+// CAPSWORD layer (layer 9) - Sticky capital letters mode
+ZMK_BASE_LAYER(Capsword,
+//╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮ ╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮
+    ___           &kp LS(L)     &kp LS(P)     &kp LS(D)     &kp LS(F)   ,   &kp SQT       &kp LS(W)     &kp LS(O)     &kp LS(U)     ___         ,
+//├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+    &hml LGUI LS(T) &hml LALT LS(S) &hml LCTRL LS(N) &hml LSHFT LS(H) &kp LS(M),&kp LS(G) &hmr RSHFT LS(C) &hmr RCTRL LS(A) &hmr RALT LS(I) &hmr RGUI LS(E),
+//├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+    &kp LS(V)     &kp LS(Z)     &kp LS(B)     &kp LS(K)     &kp LS(Q)   ,   &kp LS(X)     &kp LS(Y)     &kp DOT       &kp COMMA     &kp LS(J)   ,
+//╰─────────────┼─────────────┴─────────────┼─────────────┼─────────────┤ ├─────────────┼─────────────┼─────────────┴───────────────────────────╯
+                                              ___           &kp LS(R)     ___,___         &space_exit   ___
+//                                          ╰─────────────┴─────────────╯ ╰─────────────┴─────────────╯
+)
+
+/* vim: set ft=c tw=146: */
